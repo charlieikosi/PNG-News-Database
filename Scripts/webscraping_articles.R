@@ -12,7 +12,8 @@ library(dplyr)
 # Load Current business articles df on github
 df_url <- "https://raw.githubusercontent.com/charlieikosi/PNG-News-Database/main/Postcourier/business_articles_pc.csv"
 df1 <- read_csv(df_url) %>%
-  dplyr::select(2:4)
+  na.omit()
+
 
 # Scrape national news articles
 #df1 <- scrape_news(2092, "national", "postcourier")
