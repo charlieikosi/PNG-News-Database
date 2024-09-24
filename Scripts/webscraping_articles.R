@@ -14,24 +14,15 @@ df_url <- "https://raw.githubusercontent.com/charlieikosi/PNG-News-Database/main
 df1 <- read_csv(df_url) %>%
   na.omit()
 
-
-# Scrape national news articles
-#df1 <- scrape_news(2092, "national", "postcourier")
-
 # Scrape new business articles data
 df2 <- scrape_news(10, "business", "postcourier")
+df2$Pub.Date <- as.POSIXct(strptime(df2$Pub.Date, format = "%B %d, %Y"))
+df2$Pub.Date <- df2$Pub.Date %>% as.Date(tryFormats = "%Y-%m-%d", tz = "NZ")
 
 # Filter out duplicate rows in scraped data
 df2_filtered <- anti_join(df2, df1, by = c("Pub.Date", "Top.Stories", "URL"))
 
-# Format date
-df2_filtered$Pub.Date <- as.POSIXct(strptime(df2_filtered$Pub.Date, format = "%B %d, %Y"))
-df1$Pub.Date <- as.POSIXct(strptime(df1$Pub.Date, format = "%d/%m/%Y"))
-
 # merge tables
 df1_merged <- rbind(df2_filtered, df1)
-
-# Set date column to date format
-#df1_merged$Pub.Date <- as.POSIXct(df1_merged$Pub.Date, format = "%B %d, %Y")
 
 write.csv(df1_merged,"Postcourier/business_articles_pc.csv", row.names = FALSE)
