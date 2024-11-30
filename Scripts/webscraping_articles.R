@@ -42,6 +42,31 @@ df2_pc.national$Pub.Date <- df2_pc.national$Pub.Date %>% as.Date(tryFormats = "%
 # Filter out duplicate rows in scraped data
 df_pc.national.filtered <- anti_join(df2_pc.national,df1_pc.national, by = c("Pub.Date", "Top.Stories", "URL"))
 
+# Run Sentiment analysis
+
+url_list <- df_pc.national.filtered$URL
+
+Article.Sentiment <- c()
+count <- 1
+
+for (i in url_list) {
+  count <- count
+  sentiment.result <- tryCatch({
+    article_sentiment(i)}, error = function(e) {
+      # Print the error message
+      message("An error occurred: ", e$message)
+      # Return a tibble with default values
+      tibble(sentiment = "NA", n = "NA", proportion = "NA")
+    })
+  
+  result <- sentiment.result$sentiment[1]
+  Article.Sentiment <- c(Article.Sentiment,result)
+  message("Accessing article ", count, " of ", length(url_list), "\n")
+  count <- count + 1
+}
+
+df_pc.national.filtered$Article.Sentiment <- Article.Sentiment
+
 # merge tables
 df_pc.national.merged <- rbind(df_pc.national.filtered,df1_pc.national)
 
