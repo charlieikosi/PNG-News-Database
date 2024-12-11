@@ -32,10 +32,11 @@ write.csv(df1_merged,"Postcourier/business_articles_pc.csv", row.names = FALSE)
 # Load Current business articles df on github
 df_pc.national_url <- "https://raw.githubusercontent.com/charlieikosi/PNG-News-Database/refs/heads/main/Postcourier/national_articles_pc.csv"
 df1_pc.national <- read_csv(df_pc.national_url) %>%
+  dplyr::select(1:3)
   na.omit()
 
 # Scrape new national news articles data
-df2_pc.national <- scrape_news(10, "national", "postcourier")
+df2_pc.national <- scrape_news(20, "national", "postcourier")
 df2_pc.national$Pub.Date <- as.POSIXct(strptime(df2_pc.national$Pub.Date, format = "%B %d, %Y"))
 df2_pc.national$Pub.Date <- df2_pc.national$Pub.Date %>% as.Date(tryFormats = "%Y-%m-%d", tz = "NZ")
 
