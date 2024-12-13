@@ -32,7 +32,6 @@ write.csv(df1_merged,"Postcourier/business_articles_pc.csv", row.names = FALSE)
 # Load Current business articles df on github
 df_pc.national_url <- "https://raw.githubusercontent.com/charlieikosi/PNG-News-Database/refs/heads/main/Postcourier/national_articles_pc.csv"
 df1_pc.national <- read_csv(df_pc.national_url) %>%
-  dplyr::select(1:3)
   na.omit()
 
 # Scrape new national news articles data
@@ -42,6 +41,12 @@ df2_pc.national$Pub.Date <- df2_pc.national$Pub.Date %>% as.Date(tryFormats = "%
 
 # Filter out duplicate rows in scraped data
 df_pc.national.filtered <- anti_join(df2_pc.national,df1_pc.national, by = c("Pub.Date", "Top.Stories", "URL"))
+
+# merge tables
+df_pc.national.merged <- rbind(df_pc.national.filtered,df1_pc.national)
+
+write.csv(df_pc.national.merged,"Postcourier/national_articles_pc.csv", row.names = FALSE)
+
 
 # Run Sentiment analysis
 
