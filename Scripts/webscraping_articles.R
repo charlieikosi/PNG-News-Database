@@ -1,5 +1,6 @@
 # Change this path to you your local folder
-setwd("C:/Users/charl/Documents/Repositories/PNG-News-Database")
+#setwd("C:/Users/charl/Documents/Repositories/PNG-News-Database")
+setwd("C:/Users/charl/OneDrive/Documents/Repositories/PNG-News-Database")
 
 library(pngnewsR)
 library(tidyverse)
@@ -15,7 +16,7 @@ df1 <- read_csv(df_url) %>%
   na.omit()
 
 # Scrape new business articles data
-df2 <- scrape_news(40, "business", "postcourier")
+df2 <- scrape_news(10, "business", "postcourier")
 df2$Pub.Date <- as.POSIXct(strptime(df2$Pub.Date, format = "%B %d, %Y"))
 df2$Pub.Date <- df2$Pub.Date %>% as.Date(tryFormats = "%Y-%m-%d", tz = "NZ")
 
@@ -23,7 +24,9 @@ df2$Pub.Date <- df2$Pub.Date %>% as.Date(tryFormats = "%Y-%m-%d", tz = "NZ")
 df2_filtered <- anti_join(df2, df1, by = c("Pub.Date", "Top.Stories", "URL"))
 
 # merge tables
-df1_merged <- rbind(df2_filtered, df1)
+df1_merged <- rbind(df2_filtered, df1) %>%
+  arrange(desc(Pub.Date))
+
 
 write.csv(df1_merged,"Postcourier/business_articles_pc.csv", row.names = FALSE)
 
@@ -35,7 +38,7 @@ df1_pc.national <- read_csv(df_pc.national_url) %>%
   na.omit()
 
 # Scrape new national news articles data
-df2_pc.national <- scrape_news(40, "national", "postcourier")
+df2_pc.national <- scrape_news(20, "national", "postcourier")
 df2_pc.national$Pub.Date <- as.POSIXct(strptime(df2_pc.national$Pub.Date, format = "%B %d, %Y"))
 df2_pc.national$Pub.Date <- df2_pc.national$Pub.Date %>% as.Date(tryFormats = "%Y-%m-%d", tz = "NZ")
 
@@ -43,7 +46,8 @@ df2_pc.national$Pub.Date <- df2_pc.national$Pub.Date %>% as.Date(tryFormats = "%
 df_pc.national.filtered <- anti_join(df2_pc.national,df1_pc.national, by = c("Pub.Date", "Top.Stories", "URL"))
 
 # merge tables
-df_pc.national.merged <- rbind(df_pc.national.filtered,df1_pc.national)
+df_pc.national.merged <- rbind(df_pc.national.filtered,df1_pc.national) %>%
+  arrange(desc(Pub.Date))
 
 write.csv(df_pc.national.merged,"Postcourier/national_articles_pc.csv", row.names = FALSE)
 
